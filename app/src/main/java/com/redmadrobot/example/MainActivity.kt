@@ -8,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cache.StoriesCacheFactory
 import cache.StoriesConfig
 import com.redmadrobot.example.api.GetStoriesUseCase
-import com.redmadrobot.stories.R
-import com.redmadrobot.stories.databinding.ActivityMainBinding
+import com.redmadrobot.example.databinding.ActivityMainBinding
 import com.redmadrobot.stories.models.StoriesInputParams
 import com.redmadrobot.stories.stories.adapter.StoriesBasePreviewAdapter
 import com.redmadrobot.stories.stories.adapter.StoriesPreviewAdapter
