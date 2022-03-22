@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textTitle"
+        style="@style/StoryText.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Заголовок" />
+
+    <TextView
+        android:id="@+id/textSubtitle"
+        style="@style/StoryText.Subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        tools:text="Подзаголовок" />
+
+    <TextView
+        android:id="@+id/textDescription"
+        style="@style/StoryText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        tools:text="Подробное описание" />
+
+    <Button
+        android:id="@+id/btnAction"
+        style="@style/StoryActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/story_action_height"
+        android:layout_marginTop="24dp"
+        tools:text="Действие" />
+
+</LinearLayout>

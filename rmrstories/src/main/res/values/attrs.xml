@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="storyFrameTitleStyle" format="reference" />
+    <attr name="storyFrameSubtitleStyle" format="reference" />
+    <attr name="storyFrameTextStyle" format="reference" />
+    <attr name="storyFrameFailTitleStyle" format="reference" />
+    <attr name="storyFrameFailSubtitleStyle" format="reference" />
+    <attr name="storyFrameActionButtonStyle" format="reference" />
+</resources>

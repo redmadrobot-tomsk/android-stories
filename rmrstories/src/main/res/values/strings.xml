@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Kode Stories</string>
+
+    <string name="apps_not_found">Приложение не найдено</string>
+    <string name="stories_failed_title">Упс, произошла ошибка</string>
+    <string name="stories_failed_description">Мы уже работаем над этим. Пожалуйста, повторите попытку или зайдите позже</string>
+</resources>

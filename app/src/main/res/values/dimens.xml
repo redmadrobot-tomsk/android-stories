@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="margin_normal">16dp</dimen>
+
+    <dimen name="stories_preview_horizontal_margin">8dp</dimen>
+    <dimen name="stories_preview_vertical_margin">8dp</dimen>
+
+    <dimen name="story_frame_content_top_padding">142dp</dimen>
+    <dimen name="story_frame_content_bottom_padding">56dp</dimen>
+
+</resources>

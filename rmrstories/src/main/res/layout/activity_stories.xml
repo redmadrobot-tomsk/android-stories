@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<draggableview.DraggableView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/draggableView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    app:dragDismissDistance="112dp"
+    app:dragDismissScale="0.95"
+    app:dragElasticity="0.7">
+
+    <draggableview.LockableNestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPagerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </draggableview.LockableNestedScrollView>
+
+</draggableview.DraggableView>
