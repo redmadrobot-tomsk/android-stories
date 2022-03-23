@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.redmadrobot-tomsk:android-stories:1.0.0'
+    implementation 'com.github.redmadrobot-tomsk:android-stories:1.0.1'
 }
 ```
 
