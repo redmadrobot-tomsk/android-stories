@@ -15,20 +15,6 @@ group = 'com.github.redmadrobot-tomsk'
 def artifact = 'android-stories'
 version = '1.0.0'
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId = group
-                artifactId = artifact
-                version = version
-            }
-        }
-    }
-}
-
-
 android {
     compileSdkVersion 31
 
@@ -60,6 +46,26 @@ android {
 
     buildFeatures {
         viewBinding true
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = group
+                artifactId = artifact
+                version = version
+            }
+        }
     }
 }
 
