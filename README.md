@@ -1,5 +1,9 @@
 # Android-stories
 
+[![Platform](https://img.shields.io/badge/platform-android-brightgreen)](https://github.com/redmadrobot-tomsk/android-stories) [![](https://jitpack.io/v/redmadrobot-tomsk/android-stories.svg)](https://jitpack.io/#redmadrobot-tomsk/android-stories) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+
+<img src="https://user-images.githubusercontent.com/89060414/160050682-c43ba607-93c3-4d6b-a43f-61f06db81682.jpg" width=175 height=350 /> <img src="https://user-images.githubusercontent.com/89060414/160050674-6078ac2f-5265-4af3-97ce-70e34cde33c5.jpg" width=175 height=350 /> <img src="https://user-images.githubusercontent.com/89060414/160050664-7a4b90ee-2723-425c-b734-311402d84cc0.jpg" width=175 height=350 /> 
+
 A simple stories library inspired by Instagram and alike. 
 
 ## Requirements
