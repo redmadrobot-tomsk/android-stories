@@ -13,20 +13,28 @@ import androidx.viewpager2.widget.ViewPager2
 import cache.StoriesConfig
 import com.redmadrobot.stories.R
 import com.redmadrobot.stories.databinding.ActivityStoriesBinding
-import com.redmadrobot.stories.models.Story
 import com.redmadrobot.stories.models.StoriesInputParams
-import com.redmadrobot.stories.models.StoriesStartPositionRequired
+import com.redmadrobot.stories.models.Story
+import com.redmadrobot.stories.models.exception.StoriesStartPositionRequired
+import com.redmadrobot.stories.stories.StoriesBaseActivity.Companion.newStoriesIntent
+import com.redmadrobot.stories.stories.views.BaseStoryFrameView
 import com.redmadrobot.stories.utils.AnimationUtils
 import draggableview.LockableNestedScrollView
 
 /**
- * Main container for stories. Input parameters are list of stories.
+ * Main container for stories. Input parameters is the list of stories.
  * Parent view is [ViewPager2].
  *
- * You must start with activity with intent supplied by [newStoriesIntent] method.
+ * You must start this activity with intent supplied by [newStoriesIntent] method.
  * Otherwise, [StoriesStartPositionRequired] exception will be thrown.
  *
  * To use stories, extend this activity in main module to take full control of stories.
+ *
+ * To use your own implementation of [BaseStoryFrameView],
+ * you need to override [createStoriesFragment] with the creation of the fragment
+ * derived from [StoryFragment]. See [StoryFragment] for more information.
+ *
+ * @see [StoriesStartPositionRequired], [BaseStoryFrameView].
  */
 abstract class StoriesBaseActivity :
     FragmentActivity(R.layout.activity_stories),
@@ -86,6 +94,12 @@ abstract class StoriesBaseActivity :
         }
     }
 
+    /**
+     * Override this lambda to use your custom [StoryFragment]
+     * (for custom story frame support).
+     * */
+    protected open val createStoriesFragment: ((Story) -> StoryFragment)? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStoriesBinding.inflate(layoutInflater)
@@ -117,17 +131,20 @@ abstract class StoriesBaseActivity :
     private fun setContent() {
         viewModel.stories.observe(this) { stories ->
             binding.viewPagerContainer.apply {
-                adapter = StoriesViewPagerAdapter(this@StoriesBaseActivity, ArrayList(stories)) {
-                    post {
-                        frameChangedCallback.onPageSelected(currentStory)
-                    }
-                }
+                adapter = StoriesViewPagerAdapter(
+                    activity = this@StoriesBaseActivity,
+                    stories = ArrayList(stories),
+                    callback = {
+                        post { frameChangedCallback.onPageSelected(currentStory) }
+                    },
+                    createStoryFragment = createStoriesFragment
+                )
 
                 registerOnPageChangeCallback(frameChangedCallback)
                 setCurrentItem(currentStory, false)
                 /**
                  * preload 1 stories for faster loading
-                 * and prevent creating fragment before {@link #frameChangedCallback} worked
+                 * and prevent creating fragment before [frameChangedCallback] worked
                  * @see StoriesViewPagerAdapter
                  */
                 offscreenPageLimit = 1

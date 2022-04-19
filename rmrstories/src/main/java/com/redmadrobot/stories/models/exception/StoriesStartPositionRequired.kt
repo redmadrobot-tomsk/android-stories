@@ -1,4 +1,4 @@
-package com.redmadrobot.stories.models
+package com.redmadrobot.stories.models.exception
 
 internal object StoriesStartPositionRequired : Throwable(
     "Required parameter for StoriesBaseActivity StoriesInputParams#startStoryPosition is missing." +
