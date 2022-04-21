@@ -1,8 +1,8 @@
 # Android-stories
 
-[![Platform](https://img.shields.io/badge/platform-android-brightgreen)](https://github.com/redmadrobot-tomsk/android-stories) [![](https://jitpack.io/v/redmadrobot-tomsk/android-stories.svg)](https://jitpack.io/#redmadrobot-tomsk/android-stories) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+[![Platform](https://img.shields.io/badge/platform-android-brightgreen)](https://github.com/redmadrobot-tomsk/android-stories) [![](https://jitpack.io/v/redmadrobot-tomsk/android-stories.svg)](https://jitpack.io/#redmadrobot-tomsk/android-stories) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/redmadrobot-tomsk/android-stories#license)
 
-<img src="https://user-images.githubusercontent.com/89060414/160050682-c43ba607-93c3-4d6b-a43f-61f06db81682.jpg" width=175 height=350 /> <img src="https://user-images.githubusercontent.com/89060414/160050674-6078ac2f-5265-4af3-97ce-70e34cde33c5.jpg" width=175 height=350 /> <img src="https://user-images.githubusercontent.com/89060414/160050664-7a4b90ee-2723-425c-b734-311402d84cc0.jpg" width=175 height=350 /> 
+<img src="https://user-images.githubusercontent.com/89060414/164437966-9288e7c4-dfa2-4068-b409-d92c674487d8.gif" width=180 height=354 /> <img src="https://user-images.githubusercontent.com/89060414/164438059-9a6045d0-2887-47ed-be7b-002763f48477.gif" width=180 height=354 /> <img src="https://user-images.githubusercontent.com/89060414/164438111-0ff4611f-e478-4779-a10d-99ee5a2757e5.gif" width=180 height=354 /> 
 
 A simple stories library inspired by Instagram and alike. 
 
