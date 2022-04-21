@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:background="@color/dark">
 
-    <com.redmadrobot.stories.stories.views.StoryFrameView
+    <com.redmadrobot.stories.stories.views.StoryFrameViewImpl
         android:id="@+id/storyFrameView"
         android:layout_width="0dp"
         android:layout_height="0dp"

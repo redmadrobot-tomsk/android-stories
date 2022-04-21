@@ -1,6 +1,7 @@
 package com.redmadrobot.example
 
 import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import cache.StoriesCacheFactory
 import cache.StoriesConfig
 import com.redmadrobot.example.api.GetStoriesUseCase
+import com.redmadrobot.example.custom.CustomStoriesActivity
 import com.redmadrobot.example.databinding.ActivityMainBinding
 import com.redmadrobot.stories.models.StoriesInputParams
-import com.redmadrobot.stories.stories.adapter.StoriesBasePreviewAdapter
 import com.redmadrobot.stories.stories.adapter.StoriesPreviewAdapter
 import com.redmadrobot.stories.utils.AnimationUtils
 import com.redmadrobot.stories.utils.HorizontalMarginItemDecoration
@@ -20,11 +21,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapterListener {
-
-    private val storiesAdapter by lazy {
-        StoriesPreviewAdapter(this@MainActivity)
-    }
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -50,9 +47,31 @@ class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapt
             }
         }
 
-        binding.recyclerStories.apply {
+        // Default story frame impl.
+        initPreviewRecycler(binding.recyclerStories) { storiesInputParams ->
+            val intent = StoriesActivity.newIntent(
+                context = this,
+                storiesInputParams = storiesInputParams
+            )
+            openStoriesActivityAnimated(intent)
+        }
+        // Custom story frame impl.
+        initPreviewRecycler(binding.recyclerCustomStories) { storiesInputParams ->
+            val intent = CustomStoriesActivity.newIntent(
+                context = this,
+                storiesInputParams = storiesInputParams
+            )
+            openStoriesActivityAnimated(intent)
+        }
+    }
+
+    private fun initPreviewRecycler(
+        recycler: RecyclerView,
+        onStoryClicked: (StoriesInputParams) -> Unit
+    ) {
+        recycler.apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-            adapter = storiesAdapter
+            adapter = StoriesPreviewAdapter(onStoryClicked)
 
             val horizontalMargin =
                 resources.getDimensionPixelOffset(R.dimen.stories_preview_horizontal_margin)
@@ -70,12 +89,8 @@ class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapt
         }
     }
 
-    override fun onStoryClicked(storiesInputParams: StoriesInputParams) {
+    private fun openStoriesActivityAnimated(intent: Intent) {
         AnimationUtils.setExitTransition(this, R.transition.stories_transition)
-        val intent = StoriesActivity.newIntent(
-            context = this,
-            storiesInputParams = storiesInputParams
-        )
         val options = ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
         startActivity(intent, options)
     }

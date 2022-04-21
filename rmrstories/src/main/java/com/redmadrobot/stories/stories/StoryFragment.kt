@@ -2,7 +2,6 @@ package com.redmadrobot.stories.stories
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,24 +13,76 @@ import com.redmadrobot.stories.databinding.FragmentStoryBinding
 import com.redmadrobot.stories.models.Story
 import com.redmadrobot.stories.models.StoryFrame
 import com.redmadrobot.stories.models.StoryFrameControlsColor
-import com.redmadrobot.stories.stories.views.StoryFrameView
+import com.redmadrobot.stories.models.exception.StoryInstanceRequired
+import com.redmadrobot.stories.stories.views.BaseStoryFrameView
+import com.redmadrobot.stories.stories.views.StoryFrameViewImpl
 import com.redmadrobot.stories.stories.views.progress.StoriesProgressView
 
 /**
- * Displays one specific story. This fragment contains the main logic
+ * Displays one specific [Story]. This fragment contains the main logic
  * for controlling stories, e.g. like, pause progress, story frame change.
+ *
+ * Extend this class to use custom [BaseStoryFrameView]
+ * by overriding [createStoryFrameView]
+ * and providing your [BaseStoryFrameView] implementation like this:
+ *
+ * ```
+ * class MyStoryFragmentImpl: StoryFragment() {
+ *     companion object {
+ *         fun newInstance(story: Story): StoryFragment =
+ *             MyStoryFragmentImpl().addStoryToArguments(story)
+ *     }
+ *
+ *     override fun createStoryFrameView(context: Context): BaseStoryFrameView {
+ *         return MyStoryFrameViewImpl(context)
+ *     }
+ * }
+ * ```
+ *
+ * Then, don't forget to override StoriesBaseActivity#createStoriesFragment:
+ * ```
+ * class MyStoriesActivity: StoriesBaseActivity() {
+ * ...
+ *     override val createStoriesFragment: ((Story) -> StoryFragment)? = { story ->
+ *         MyStoryFragmentImpl.newInstance(story)
+ *     }
+ * ...
+ * }
+ * ```
+ *
+ * If [createStoryFrameView] was not overridden,
+ * default implementation [StoryFrameViewImpl] will be used.
+ *
+ * @see [Story], [BaseStoryFrameView], [StoriesBaseActivity].
  * */
-class StoryFragment : Fragment(), StoryListener {
+open class StoryFragment : Fragment(), StoryListener {
 
     companion object {
         private const val KEY_STORY = "KEY_STORY"
 
-        fun newInstance(story: Story): Fragment {
-            return StoryFragment().apply {
-                arguments = bundleOf(
-                    KEY_STORY to story
-                )
+        /**
+         * Adds [Story] to bundle of [StoryFragment].
+         * Use it to pass [Story] instance when extending [StoryFragment].
+         * You MUST pass the story instance, otherwise, [StoryInstanceRequired] will be thrown.
+         *
+         * @param[story] Story to be displayed.
+         *
+         * @return[StoryFragment] Story fragment bundled with story instance.
+         *
+         * @throws[StoryInstanceRequired] if this method was not used when creating the derived class.
+         * (Exception is thrown during runtime, after the view is created)
+         *
+         * @see [Story], [StoryInstanceRequired].
+         * */
+        @JvmStatic
+        protected fun StoryFragment.addStoryToArguments(story: Story): StoryFragment {
+            return this.apply {
+                arguments = bundleOf(KEY_STORY to story)
             }
+        }
+
+        fun newStoryFragmentInstance(story: Story): StoryFragment {
+            return StoryFragment().addStoryToArguments(story)
         }
     }
 
@@ -39,6 +90,8 @@ class StoryFragment : Fragment(), StoryListener {
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var storyFrameView: BaseStoryFrameView
 
     private lateinit var actionsCallback: StoryActionsCallback
 
@@ -56,7 +109,7 @@ class StoryFragment : Fragment(), StoryListener {
         override fun onComplete() = actionsCallback.onCompleteStory()
     }
 
-    private val storyFrameListener = object : StoryFrameView.StoryFrameListener {
+    private val storyFrameListener = object : BaseStoryFrameView.StoryFrameListener {
         override fun onLoaded() {
             isFrameLoaded = true
             binding.progressView.startProgress()
@@ -75,6 +128,12 @@ class StoryFragment : Fragment(), StoryListener {
         override fun onPause() = binding.progressView.pause()
         override fun onResume() = binding.progressView.resume()
     }
+
+    /**
+     * Override this method to use your implementation [BaseStoryFrameView].
+     * If [createStoryFrameView] was not overridden, [StoryFrameViewImpl] will be used.
+     * */
+    protected open fun createStoryFrameView(context: Context): BaseStoryFrameView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,21 +156,25 @@ class StoryFragment : Fragment(), StoryListener {
         initViews()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun parseArguments() {
         arguments?.getParcelable<Story>(KEY_STORY)?.let {
             story = it
-        } ?: run {
-            Log.d("Story", "Story must not be null")
-            activity?.finish()
-        }
+        } ?: throw StoryInstanceRequired
     }
 
     private fun initViews() {
+        // Replace default story frame with the custom one if createStoryFrameView was overridden.
+        val customView = createStoryFrameView(requireContext())?.also { customView ->
+            with(binding.root) {
+                customView.layoutParams = binding.storyFrameView.layoutParams
+                val storyFrameIndex = indexOfChild(binding.storyFrameView)
+                removeView(binding.storyFrameView)
+                addView(customView, storyFrameIndex)
+            }
+        }
+        storyFrameView = customView ?: binding.storyFrameView
+        storyFrameView.listener = storyFrameListener
+
         binding.progressView.apply {
             storiesCount = frames.size
             storyProgressListener = progressListener
@@ -119,12 +182,6 @@ class StoryFragment : Fragment(), StoryListener {
 
         binding.imgClose.setOnClickListener {
             actionsCallback.closeStories()
-        }
-
-        binding.storyFrameView.listener = storyFrameListener
-
-        binding.storyFrameView.setActionCallback { url ->
-            StoryIntentUtil.executeStoryAction(requireContext(), url)
         }
     }
 
@@ -145,7 +202,7 @@ class StoryFragment : Fragment(), StoryListener {
     }
 
     private fun startStoryFrame() {
-        binding.storyFrameView.storyFrame = frames.getOrNull(currentFrame)
+        storyFrameView.storyFrame = frames.getOrNull(currentFrame)
         binding.progressView.setStartStory(currentFrame)
         if (isFrameLoaded) binding.progressView.startProgress()
         updateStoryControls(frames[currentFrame])
@@ -154,7 +211,7 @@ class StoryFragment : Fragment(), StoryListener {
     private fun startLastStoryFrame() {
         val lastStoryFrame = frames[currentFrame]
         binding.progressView.setStartStory(currentFrame)
-        binding.storyFrameView.storyFrame = lastStoryFrame
+        storyFrameView.storyFrame = lastStoryFrame
         updateStoryControls(lastStoryFrame)
     }
 
@@ -162,7 +219,7 @@ class StoryFragment : Fragment(), StoryListener {
         frames.getOrNull(currentFrame + 1)?.apply {
             ++currentFrame
             onFrameSwitched?.invoke()
-            binding.storyFrameView.storyFrame = this
+            storyFrameView.storyFrame = this
             updateStoryControls(this)
         } ?: run {
             actionsCallback.onCompleteStory()
@@ -173,7 +230,7 @@ class StoryFragment : Fragment(), StoryListener {
         frames.getOrNull(currentFrame - 1)?.apply {
             --currentFrame
             onFrameSwitched?.invoke()
-            binding.storyFrameView.storyFrame = this
+            storyFrameView.storyFrame = this
             updateStoryControls(this)
         } ?: run {
             if (!actionsCallback.hasPreviousStory(story)) {
@@ -212,7 +269,7 @@ class StoryFragment : Fragment(), StoryListener {
     override fun onStart() {
         super.onStart()
         if (isPause) {
-            binding.storyFrameView.listener = storyFrameListener
+            storyFrameView.listener = storyFrameListener
             binding.progressView.storyProgressListener = progressListener
             binding.progressView.setStartStory(currentFrame)
             if (isFrameLoaded) binding.progressView.startProgress()
@@ -221,9 +278,14 @@ class StoryFragment : Fragment(), StoryListener {
 
     override fun onStop() {
         super.onStop()
-        binding.storyFrameView.listener = null
+        storyFrameView.listener = null
         binding.progressView.storyProgressListener = null
         binding.progressView.destroy()
         isPause = true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

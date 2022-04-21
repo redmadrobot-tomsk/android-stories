@@ -95,7 +95,7 @@ abstract class StoriesBasePreviewAdapter(
         abstract fun bind(data: Story)
     }
 
-    interface StoriesAdapterListener {
+    fun interface StoriesAdapterListener {
         fun onStoryClicked(storiesInputParams: StoriesInputParams)
     }
 }
