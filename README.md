@@ -26,7 +26,7 @@ dependencies {
 
 ## Initialization
 
-1. Initialize StoriesCacheFactory in your Application class.
+1. Initialize StoriesCacheFactory in your `Application` class.
 
 ```
 class App : Application() {
@@ -40,7 +40,7 @@ class App : Application() {
 }
 ```
 
-2. Add internet permission to your manifest.
+2. Add internet permission to your manifest for Glide.
 
 ```
 <uses-permission android:name="android.permission.INTERNET" />
@@ -48,8 +48,8 @@ class App : Application() {
 
 ## Setting up stories activity
 
-1. Extend StoriesBaseActivity and override its functions how you see fit.
-Note that you MUST start stories activity with intent returned by StoriesBaseActivity.newStoriesIntent because of required parameters (StoriesInputParams). 
+1. Extend `StoriesBaseActivity` and override its functions how you see fit.
+Note that you MUST start stories activity with intent returned by `StoriesBaseActivity.newStoriesIntent` because of required parameters (`StoriesInputParams`). 
 Otherwise, exception will be thrown.
 
 ```
@@ -115,7 +115,7 @@ val story = Story(
 )
 ```
 
-3. Add stories to StoriesController.
+3. Add stories to `StoriesController`.
 
 ```
 val stories = listOf(story) // sample story was created in  p.3
@@ -123,7 +123,7 @@ val controller: StoriesController = StoriesCacheFactory.getInstance()
 controller.clearAndAdd(StoriesConfig.All, stories)
 ```
 
-4. Start StoriesActivity (don't forget to add required arguments to intent).
+4. Start `StoriesActivity` (don't forget to add required arguments to intent).
 
 ```
 someButton.setOnClickListener {
@@ -140,7 +140,7 @@ someButton.setOnClickListener {
 
 ## Setting up previews
 
-1. Add RecyclerView to your activity/fragment layout that should open StoriesActivity.
+1. Add RecyclerView to your activity/fragment layout that should open `StoriesActivity`.
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -164,7 +164,7 @@ someButton.setOnClickListener {
 </LinearLayout>
 ```
 
-2. In your activity/fragment (e.g. MainActivity), create stories previews adapter, assign it to the RecyclerView, and implement StoriesAdapterListener interface to open StoriesActivity (see "Setup Stories activity" section).
+2. In your activity/fragment (e.g. `MainActivity`), create stories previews adapter, assign it to the `RecyclerView`, and implement `StoriesAdapterListener` interface to open StoriesActivity (see "Setup Stories activity" section).
 
 ```
 class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapterListener {
@@ -189,7 +189,76 @@ class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapt
 }
 ```
 
-(note that you can create your own stories previews adapter by extending StoriesBasePreviewAdapter).
+(note that you can create your own stories previews adapter by extending `StoriesBasePreviewAdapter`).
+
+## Custom story frame view
+
+It's possible to use a different story frame layout if you wish to change it. 
+`StoryFrameViewImpl` is used by default. 
+
+1. Create your own story frame view by extending `BaseStoryFrameView`. You should set data to your views and update them in `onFrameSet`.
+
+```
+class CustomStoryFrameView(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : BaseStoryFrameView(context, attrs, defStyleAttr) {
+
+    private val binding = ViewCustomStoryFrameBinding.inflate(LayoutInflater.from(context)).apply {
+        addView(root)
+    }
+
+    override fun onFrameSet(frame: StoryFrame) {
+        binding.textTitle.text = frame.content.header1
+    }
+}
+```
+
+view_custom_story.xml:
+```
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAlignment="center"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+
+2. Extend `StoryFragment` and override `createStoryFrameView`, where you should return your `BaseStoryFrameView` implementation. Note that you MUST pass story instance when creating your custom fragment by calling `StoryFragment#addStoryToArguments`, otherwise, exception will be thrown (similar to `StoriesBaseActivity` and `StoriesInputParams`).
+
+```
+class CustomStoryFragment : StoryFragment() {
+    companion object {
+        fun newInstance(story: Story): StoryFragment =
+            CustomStoryFragment().addStoryToArguments(story)
+    }
+
+    override fun createStoryFrameView(context: Context): BaseStoryFrameView =
+        CustomStoryFrameView(context)
+}
+```
+
+3. Override `createStoriesFragment` in your stories activity derived from `StoriesActivity` like this: 
+
+```
+class StoriesActivity : StoriesBaseActivity() {
+    override val createStoriesFragment: ((Story) -> StoryFragment) = { story ->
+        CustomStoryFragment.newInstance(story)
+    }
+}
+```
+
+For more info, see [the example](https://github.com/redmadrobot-tomsk/android-stories/tree/master/app/src/main/java/com/redmadrobot/example/custom).
 
 ## License
 
