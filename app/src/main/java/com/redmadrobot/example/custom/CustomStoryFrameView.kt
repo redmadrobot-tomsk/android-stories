@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import com.redmadrobot.example.R
 import com.redmadrobot.example.databinding.ViewCustomStoryFrameBinding
 import com.redmadrobot.stories.models.StoryFrame
 import com.redmadrobot.stories.stories.views.BaseStoryFrameView
@@ -21,14 +23,15 @@ class CustomStoryFrameView(
     }
 
     override fun onFrameSet(frame: StoryFrame) = with(binding) {
-        try {
-            val textColor = Color.parseColor(frame.content.textColor)
-            textCustomViewNotice.setTextColor(textColor)
-            textTitle.setTextColor(textColor)
-            textError.setTextColor(textColor)
+        val textColor = try {
+            Color.parseColor(frame.content.textColor)
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
+            ContextCompat.getColor(context, R.color.black)
         }
+        textCustomViewNotice.setTextColor(textColor)
+        textTitle.setTextColor(textColor)
+        textError.setTextColor(textColor)
 
         textTitle.text = frame.content.header1
 
