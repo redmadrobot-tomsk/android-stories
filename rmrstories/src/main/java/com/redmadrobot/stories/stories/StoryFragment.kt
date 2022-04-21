@@ -76,7 +76,8 @@ open class StoryFragment : Fragment(), StoryListener {
          *
          * @see [Story], [StoryInstanceRequired].
          * */
-        fun StoryFragment.addStoryToArguments(story: Story): StoryFragment {
+        @JvmStatic
+        protected fun StoryFragment.addStoryToArguments(story: Story): StoryFragment {
             return this.apply {
                 arguments = bundleOf(KEY_STORY to story)
             }
