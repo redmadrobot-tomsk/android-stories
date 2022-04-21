@@ -26,8 +26,6 @@
             android:name="com.redmadrobot.example.StoriesActivity"
             android:theme="@style/AppTheme.Draggable" />
 
-        <activity android:name=".custom.CustomStoriesMainActivity" />
-
         <activity
             android:name=".custom.CustomStoriesActivity"
             android:theme="@style/AppTheme.Draggable" />

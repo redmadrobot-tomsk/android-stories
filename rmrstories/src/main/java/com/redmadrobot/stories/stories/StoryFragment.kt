@@ -1,6 +1,5 @@
 package com.redmadrobot.stories.stories
 
-import android.animation.LayoutTransition
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.redmadrobot.stories.R
 import com.redmadrobot.stories.databinding.FragmentStoryBinding
@@ -168,6 +166,7 @@ open class StoryFragment : Fragment(), StoryListener {
         // Replace default story frame with the custom one if createStoryFrameView was overridden.
         val customView = createStoryFrameView(requireContext())?.also { customView ->
             with(binding.root) {
+                customView.layoutParams = binding.storyFrameView.layoutParams
                 val storyFrameIndex = indexOfChild(binding.storyFrameView)
                 removeView(binding.storyFrameView)
                 addView(customView, storyFrameIndex)
@@ -184,36 +183,6 @@ open class StoryFragment : Fragment(), StoryListener {
         binding.imgClose.setOnClickListener {
             actionsCallback.closeStories()
         }
-    }
-
-    private fun replaceDefaultStoryFrameViewWithCustom(
-        customView: BaseStoryFrameView
-    ) {
-        val parentLayoutTransition = binding.root.layoutTransition
-        parentLayoutTransition.addTransitionListener(object : LayoutTransition.TransitionListener {
-            override fun startTransition(
-                transition: LayoutTransition?,
-                container: ViewGroup?,
-                view: View?,
-                transitionType: Int
-            ) {
-
-            }
-
-            override fun endTransition(
-                transition: LayoutTransition?,
-                container: ViewGroup?,
-                view: View?,
-                transitionType: Int
-            ) {
-                with(binding.root) {
-                    val storyFrameIndex = indexOfChild(binding.storyFrameView)
-                    removeView(binding.storyFrameView)
-                    addView(customView, storyFrameIndex)
-                    binding.storyFrameView.isVisible = false
-                }
-            }
-        })
     }
 
     /**

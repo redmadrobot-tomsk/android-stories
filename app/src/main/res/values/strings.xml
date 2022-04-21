@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Stories</string>
+    <string name="stories_default">Default story frame impl</string>
+    <string name="stories_custom">Custom story frame impl</string>
     <string name="custom_view">This story frame view is custom.</string>
     <string name="error">Error!</string>
 </resources>
