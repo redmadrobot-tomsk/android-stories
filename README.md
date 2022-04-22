@@ -118,7 +118,7 @@ val story = Story(
 3. Add stories to `StoriesController`.
 
 ```
-val stories = listOf(story) // sample story was created in  p.3
+val stories = listOf(story) // sample story was created in  p.2
 val controller: StoriesController = StoriesCacheFactory.getInstance()
 controller.clearAndAdd(StoriesConfig.All, stories)
 ```
@@ -169,10 +169,11 @@ someButton.setOnClickListener {
 ```
 class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapterListener {
 
-    private val storiesAdapter = StoriesPreviewAdapter()
+    private val storiesAdapter = StoriesPreviewAdapter(this@MainActivity)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
         findViewById<RecyclerView>(R.id.recyclerStories).adapter = storiesAdapter
     }
 
@@ -205,12 +206,14 @@ class CustomStoryFrameView(
     defStyleAttr: Int = 0
 ) : BaseStoryFrameView(context, attrs, defStyleAttr) {
 
-    private val binding = ViewCustomStoryFrameBinding.inflate(LayoutInflater.from(context)).apply {
-        addView(root)
+    init {
+        View.inflate(context, R.layout.view_custom_frame, this)
     }
 
+    private val textTitle = findViewById<TextView>(R.id.textTitle)
+
     override fun onFrameSet(frame: StoryFrame) {
-        binding.textTitle.text = frame.content.header1
+        textTitle.text = frame.content.header1
     }
 }
 ```
@@ -231,7 +234,7 @@ view_custom_story.xml:
         android:layout_gravity="center"
         android:textAlignment="center"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
 ```
 
 2. Extend `StoryFragment` and override `createStoryFrameView`, where you should return your `BaseStoryFrameView` implementation. Note that you MUST pass story instance when creating your custom fragment by calling `StoryFragment#addStoryToArguments`, otherwise, exception will be thrown (similar to `StoriesBaseActivity` and `StoriesInputParams`).
