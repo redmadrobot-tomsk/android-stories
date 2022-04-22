@@ -131,10 +131,7 @@ someButton.setOnClickListener {
         context = this,
         storiesInputParams = StoriesInputParams.createDefaults()
     )
-    // Optional animations
-    AnimationUtils.setExitTransition(this, R.transition.stories_transition)
-    val options = ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
-    startActivity(intent, options)
+    startActivity(intent)
 }
 ```
 
@@ -178,14 +175,11 @@ class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapt
     }
 
     override fun onStoryClicked(storiesInputParams: StoriesInputParams) {
-        AnimationUtils.setExitTransition(this, R.transition.stories_transition)
         val intent = StoriesActivity.newIntent(
             context = this,
             storiesInputParams = storiesInputParams
         )
-        // Optional animations
-        val options = ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
-        startActivity(intent, options)
+        startActivity(intent)
     }
 }
 ```
