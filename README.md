@@ -4,7 +4,7 @@
 
 <img src="https://user-images.githubusercontent.com/89060414/164437966-9288e7c4-dfa2-4068-b409-d92c674487d8.gif" width=180 height=354 /> <img src="https://user-images.githubusercontent.com/89060414/164438059-9a6045d0-2887-47ed-be7b-002763f48477.gif" width=180 height=354 /> <img src="https://user-images.githubusercontent.com/89060414/164438111-0ff4611f-e478-4779-a10d-99ee5a2757e5.gif" width=180 height=354 /> 
 
-A simple stories library inspired by Instagram and alike. 
+A simple stories library inspired by Instagram and alike.
 
 ## Requirements
 
@@ -48,9 +48,9 @@ class App : Application() {
 
 ## Setting up stories activity
 
-1. Extend `StoriesBaseActivity` and override its functions how you see fit.
-Note that you MUST start stories activity with intent returned by `StoriesBaseActivity.newStoriesIntent` because of required parameters (`StoriesInputParams`). 
-Otherwise, exception will be thrown.
+1. Extend `StoriesBaseActivity` and override its functions how you see fit. Note that you MUST start
+   stories activity with intent returned by `StoriesBaseActivity.newStoriesIntent` because of
+   required parameters (`StoriesInputParams`). Otherwise, exception will be thrown.
 
 ```
 class StoriesActivity : StoriesBaseActivity() {
@@ -84,8 +84,9 @@ class StoriesActivity : StoriesBaseActivity() {
 }
 ```
 
-2. Create stories models (e.g. by fetching from your API and converting).
-For example, here is a simple story model:
+2. Create stories models (e.g. by fetching from your API and converting). For example, here is a
+   simple story model:
+
 ```
 val story = Story(
     id = "some-UUID-or-else",
@@ -161,7 +162,9 @@ someButton.setOnClickListener {
 </LinearLayout>
 ```
 
-2. In your activity/fragment (e.g. `MainActivity`), create stories previews adapter, assign it to the `RecyclerView`, and implement `StoriesAdapterListener` interface to open StoriesActivity (see "Setup Stories activity" section).
+2. In your activity/fragment (e.g. `MainActivity`), create stories previews adapter, assign it to
+   the `RecyclerView`, and implement `StoriesAdapterListener` interface to open StoriesActivity (
+   see "Setup Stories activity" section).
 
 ```
 class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapterListener {
@@ -184,14 +187,16 @@ class MainActivity : AppCompatActivity(), StoriesBasePreviewAdapter.StoriesAdapt
 }
 ```
 
-(note that you can create your own stories previews adapter by extending `StoriesBasePreviewAdapter`).
+(note that you can create your own stories previews adapter by
+extending `StoriesBasePreviewAdapter`).
 
 ## Custom story frame view
 
-It's possible to use a different story frame layout if you wish to change it. 
-`StoryFrameViewImpl` is used by default. 
+It's possible to use a different story frame layout if you wish to change it.
+`StoryFrameViewImpl` is used by default.
 
-1. Create your own story frame view by extending `BaseStoryFrameView`. You should set data to your views and update them in `onFrameSet`.
+1. Create your own story frame view by extending `BaseStoryFrameView`. You should set data to your
+   views and update them in `onFrameSet`.
 
 ```
 class CustomStoryFrameView(
@@ -213,6 +218,7 @@ class CustomStoryFrameView(
 ```
 
 view_custom_story.xml:
+
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -231,7 +237,10 @@ view_custom_story.xml:
 </FrameLayout>
 ```
 
-2. Extend `StoryFragment` and override `createStoryFrameView`, where you should return your `BaseStoryFrameView` implementation. Note that you MUST pass story instance when creating your custom fragment by calling `StoryFragment#addStoryToArguments`, otherwise, exception will be thrown (similar to `StoriesBaseActivity` and `StoriesInputParams`).
+2. Extend `StoryFragment` and override `createStoryFrameView`, where you should return
+   your `BaseStoryFrameView` implementation. Note that you MUST pass story instance when creating
+   your custom fragment by calling `StoryFragment#addStoryToArguments`, otherwise, exception will be
+   thrown (similar to `StoriesBaseActivity` and `StoriesInputParams`).
 
 ```
 class CustomStoryFragment : StoryFragment() {
@@ -245,7 +254,8 @@ class CustomStoryFragment : StoryFragment() {
 }
 ```
 
-3. Override `createStoriesFragment` in your stories activity derived from `StoriesActivity` like this: 
+4. Override `createStoriesFragment` in your stories activity derived from `StoriesActivity` like
+   this:
 
 ```
 class StoriesActivity : StoriesBaseActivity() {
@@ -255,7 +265,22 @@ class StoriesActivity : StoriesBaseActivity() {
 }
 ```
 
-For more info, see [the example](https://github.com/redmadrobot-tomsk/android-stories/tree/master/app/src/main/java/com/redmadrobot/example/custom).
+5. You can change the behaviour of "is seen" status for the story by passing `StoryIsSeenWhen`
+   to `StoryFragment#addToStoryArguments`.
+   See  [StoryIsSeenWhen](https://github.com/redmadrobot-tomsk/android-stories/tree/master/app/src/main/java/com/redmadrobot/stories/models/StoryIsSeenWhen.kt)
+   for more details.
+
+```
+class StoriesActivity : StoriesBaseActivity() {
+    override val createStoryFragment: ((Story) -> StoryFragment) = { story ->
+        StoryFragment.newStoryFragmentInstance(story, StoryIsSeenWhen.TWO)
+    }
+}
+```
+
+For more info,
+see [the example](https://github.com/redmadrobot-tomsk/android-stories/tree/master/app/src/main/java/com/redmadrobot/example/custom)
+.
 
 ## License
 

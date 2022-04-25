@@ -13,6 +13,7 @@ import com.redmadrobot.stories.databinding.FragmentStoryBinding
 import com.redmadrobot.stories.models.Story
 import com.redmadrobot.stories.models.StoryFrame
 import com.redmadrobot.stories.models.StoryFrameControlsColor
+import com.redmadrobot.stories.models.StoryIsSeenWhen
 import com.redmadrobot.stories.models.exception.StoryInstanceRequired
 import com.redmadrobot.stories.stories.views.BaseStoryFrameView
 import com.redmadrobot.stories.stories.views.StoryFrameViewImpl
@@ -59,6 +60,7 @@ open class StoryFragment : Fragment(), StoryListener {
 
     companion object {
         private const val KEY_STORY = "KEY_STORY"
+        private const val KEY_STORY_IS_SEEN_WHEN = "STORY_IS_SEEN_WHEN"
 
         /**
          * Adds [Story] to bundle of [StoryFragment].
@@ -67,22 +69,35 @@ open class StoryFragment : Fragment(), StoryListener {
          *
          * @param[story] Story to be displayed.
          *
+         * @param[storyIsSeenWhen] Defines when the story is considered "seen"
+         * (depending on the frame).
+         * Optional parameter. Default value is [StoryIsSeenWhen.LAST_FRAME].
+         *
          * @return[StoryFragment] Story fragment bundled with story instance.
          *
          * @throws[StoryInstanceRequired] if this method was not used when creating the derived class.
          * (Exception is thrown during runtime, after the view is created)
          *
-         * @see [Story], [StoryInstanceRequired].
+         * @see [Story], [StoryIsSeenWhen], [StoryInstanceRequired].
          * */
         @JvmStatic
-        protected fun StoryFragment.addStoryToArguments(story: Story): StoryFragment {
+        protected fun StoryFragment.addStoryToArguments(
+            story: Story,
+            storyIsSeenWhen: StoryIsSeenWhen? = null
+        ): StoryFragment {
             return this.apply {
-                arguments = bundleOf(KEY_STORY to story)
+                arguments = bundleOf(
+                    KEY_STORY to story,
+                    KEY_STORY_IS_SEEN_WHEN to storyIsSeenWhen
+                )
             }
         }
 
-        fun newStoryFragmentInstance(story: Story): StoryFragment {
-            return StoryFragment().addStoryToArguments(story)
+        fun newStoryFragmentInstance(
+            story: Story,
+            storyIsSeenWhen: StoryIsSeenWhen? = null
+        ): StoryFragment {
+            return StoryFragment().addStoryToArguments(story, storyIsSeenWhen)
         }
     }
 
@@ -98,6 +113,7 @@ open class StoryFragment : Fragment(), StoryListener {
     private lateinit var story: Story
     private val frames: List<StoryFrame>
         get() = story.frames
+    private lateinit var storyIsSeenWhen: StoryIsSeenWhen
 
     private var currentFrame = 0
     private var isPause = false
@@ -118,11 +134,13 @@ open class StoryFragment : Fragment(), StoryListener {
         override fun onNext() = onNextFrame {
             isFrameLoaded = false
             binding.progressView.next()
+            setStoryIsSeen()
         }
 
         override fun onPrev() = onPreviousFrame {
             isFrameLoaded = false
             binding.progressView.previous()
+            setStoryIsSeen()
         }
 
         override fun onPause() = binding.progressView.pause()
@@ -160,6 +178,8 @@ open class StoryFragment : Fragment(), StoryListener {
         arguments?.getParcelable<Story>(KEY_STORY)?.let {
             story = it
         } ?: throw StoryInstanceRequired
+        storyIsSeenWhen = arguments?.getParcelable(KEY_STORY_IS_SEEN_WHEN)
+            ?: StoryIsSeenWhen.default()
     }
 
     private fun initViews() {
@@ -237,6 +257,15 @@ open class StoryFragment : Fragment(), StoryListener {
                 binding.progressView.reverse()
                 if (isFrameLoaded) binding.progressView.startProgress()
             }
+        }
+    }
+
+    private fun setStoryIsSeen() {
+        when (storyIsSeenWhen) {
+            StoryIsSeenWhen.IMMEDIATE -> if (currentFrame >= 0) actionsCallback.setStorySeen()
+            StoryIsSeenWhen.ONE -> if (currentFrame >= 1) actionsCallback.setStorySeen()
+            StoryIsSeenWhen.TWO -> if (currentFrame >= 2) actionsCallback.setStorySeen()
+            StoryIsSeenWhen.LAST_FRAME -> if (currentFrame == frames.lastIndex) actionsCallback.setStorySeen()
         }
     }
 

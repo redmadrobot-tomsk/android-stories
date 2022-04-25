@@ -19,7 +19,7 @@ class CustomStoriesActivity : StoriesBaseActivity() {
         )
     }
 
-    override val createStoriesFragment: ((Story) -> StoryFragment) = { story ->
+    override val createStoryFragment: ((Story) -> StoryFragment) = { story ->
         CustomStoryFragment.newInstance(story)
     }
 

@@ -22,7 +22,7 @@ internal class StoriesCache(
         private const val MILLISECONDS = 1000L
     }
 
-    var globalConfig: StoriesConfig = StoriesConfig.All
+    var globalConfig: StoriesConfig = StoriesConfig.default()
     var isImagesPreload = false
 
     override fun getScope(): CoroutineScope = coroutine

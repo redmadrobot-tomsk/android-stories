@@ -10,7 +10,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
-import cache.StoriesConfig
 import com.redmadrobot.stories.R
 import com.redmadrobot.stories.databinding.ActivityStoriesBinding
 import com.redmadrobot.stories.models.StoriesInputParams
@@ -31,7 +30,7 @@ import draggableview.LockableNestedScrollView
  * To use stories, extend this activity in main module to take full control of stories.
  *
  * To use your own implementation of [BaseStoryFrameView],
- * you need to override [createStoriesFragment] with the creation of the fragment
+ * you need to override [createStoryFragment] with the creation of the fragment
  * derived from [StoryFragment]. See [StoryFragment] for more information.
  *
  * @see [StoriesStartPositionRequired], [BaseStoryFrameView].
@@ -42,8 +41,8 @@ abstract class StoriesBaseActivity :
     LockableNestedScrollView.DraggableViewListener {
 
     protected companion object {
-        private const val KEY_CONFIG = "KEY_CONFIG"
         private const val KEY_START_POSITION = "KEY_START_POSITION"
+        private const val KEY_STORIES_INPUT_PARAMS = "STORIES_INPUT_PARAMS"
 
         private const val START_POSITION_NULL = -1
 
@@ -66,18 +65,17 @@ abstract class StoriesBaseActivity :
             context: Context,
             clazz: Class<out StoriesBaseActivity>,
             storiesInputParams: StoriesInputParams
-        ): Intent = Intent(context, clazz)
-            .putExtra(KEY_START_POSITION, storiesInputParams.startStoryPosition)
-            .putExtra(KEY_CONFIG, storiesInputParams.storyConfig)
+        ): Intent = Intent(context, clazz).putExtra(KEY_STORIES_INPUT_PARAMS, storiesInputParams)
     }
 
     private lateinit var binding: ActivityStoriesBinding
 
-    private var currentStory = -1
+    private var currentStory = START_POSITION_NULL
     private var direction = SwipeDirection.RIGHT
 
     private val viewModel by lazy {
-        StoriesViewModel(intent.getParcelableExtra(KEY_CONFIG) as StoriesConfig?)
+        val params = intent.getParcelableExtra<StoriesInputParams?>(KEY_STORIES_INPUT_PARAMS)
+        StoriesViewModel(params?.storyConfig)
     }
     private val windowInsetsController by lazy {
         ViewCompat.getWindowInsetsController(binding.draggableView)
@@ -98,7 +96,7 @@ abstract class StoriesBaseActivity :
      * Override this lambda to use your custom [StoryFragment]
      * (for custom story frame support).
      * */
-    protected open val createStoriesFragment: ((Story) -> StoryFragment)? = null
+    protected open val createStoryFragment: ((Story) -> StoryFragment)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,8 +109,9 @@ abstract class StoriesBaseActivity :
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetsController?.hide(WindowInsetsCompat.Type.systemBars())
 
+        val params = intent?.getParcelableExtra<StoriesInputParams?>(KEY_STORIES_INPUT_PARAMS)
         val startPosition = savedInstanceState?.getInt(KEY_START_POSITION, START_POSITION_NULL)
-            ?: intent.getIntExtra(KEY_START_POSITION, START_POSITION_NULL)
+            ?: params?.startStoryPosition ?: START_POSITION_NULL
 
         // Required parameter that must be bundled with intent.
         if (startPosition == START_POSITION_NULL) throw StoriesStartPositionRequired
@@ -137,7 +136,7 @@ abstract class StoriesBaseActivity :
                     callback = {
                         post { frameChangedCallback.onPageSelected(currentStory) }
                     },
-                    createStoryFragment = createStoriesFragment
+                    createStoryFragment = createStoryFragment
                 )
 
                 registerOnPageChangeCallback(frameChangedCallback)
@@ -168,6 +167,10 @@ abstract class StoriesBaseActivity :
     override fun closeStories() {
         showSystemBars()
         finishAfterTransition()
+    }
+
+    override fun setStorySeen() {
+        viewModel.updateStoryIsSeen(currentStory)
     }
 
     override fun onCompleteStory() {
