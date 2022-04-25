@@ -5,9 +5,9 @@ import android.view.View
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.palette.graphics.Palette
-import cache.StoriesConfig
 import com.redmadrobot.stories.R
 import com.redmadrobot.stories.databinding.ItemPreviewStoryBinding
+import com.redmadrobot.stories.models.StoriesInputParams
 import com.redmadrobot.stories.models.Story
 import com.redmadrobot.stories.utils.StoriesColorUtils
 import com.redmadrobot.stories.utils.setImageWithGlide
@@ -20,17 +20,17 @@ import com.redmadrobot.stories.utils.setImageWithGlide
  * */
 class StoriesPreviewAdapter(
     private val listener: StoriesAdapterListener,
-    private val config: StoriesConfig? = null
-) : StoriesBasePreviewAdapter(R.layout.item_preview_story, config) {
+    private val inputParams: StoriesInputParams = StoriesInputParams.createDefaults()
+) : StoriesBasePreviewAdapter(R.layout.item_preview_story, inputParams) {
 
     override fun createViewHolder(view: View): StoriesBasePreviewViewHolder =
-        StoriesPreviewViewHolder(view, listener, config)
+        StoriesPreviewViewHolder(view, listener, inputParams)
 
     class StoriesPreviewViewHolder(
         view: View,
         listener: StoriesAdapterListener,
-        config: StoriesConfig?
-    ) : StoriesBasePreviewViewHolder(listener, view, config) {
+        inputParams: StoriesInputParams
+    ) : StoriesBasePreviewViewHolder(listener, view, inputParams) {
         private val binding = ItemPreviewStoryBinding.bind(view)
 
         override fun bind(data: Story) = with(binding) {

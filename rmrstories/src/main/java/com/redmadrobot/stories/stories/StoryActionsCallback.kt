@@ -9,6 +9,7 @@ import com.redmadrobot.stories.models.Story
 interface StoryActionsCallback {
     fun onStoryActionClicked(url: String)
     fun closeStories()
+    fun setStorySeen()
     fun onCompleteStory()
     fun hasPreviousStory(story: Story): Boolean
 }

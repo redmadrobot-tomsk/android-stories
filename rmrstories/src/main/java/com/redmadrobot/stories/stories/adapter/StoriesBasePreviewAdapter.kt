@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import cache.StoriesCacheFactory
-import cache.StoriesConfig
 import com.redmadrobot.stories.models.StoriesInputParams
 import com.redmadrobot.stories.models.Story
 import kotlinx.coroutines.flow.collect
@@ -24,7 +23,7 @@ import kotlinx.coroutines.launch
  */
 abstract class StoriesBasePreviewAdapter(
     @LayoutRes private val layout: Int,
-    private val config: StoriesConfig? = null
+    private val inputParams: StoriesInputParams = StoriesInputParams.createDefaults()
 ) : ListAdapter<Story, StoriesBasePreviewAdapter.StoriesBasePreviewViewHolder>(DIFF_UTIL) {
 
     companion object {
@@ -46,7 +45,7 @@ abstract class StoriesBasePreviewAdapter(
     init {
         data.observeForever(observer)
         storage.getScope().launch {
-            storage.get(config).collect {
+            storage.get(inputParams.storyConfig).collect {
                 data.postValue(it)
             }
         }
@@ -79,16 +78,14 @@ abstract class StoriesBasePreviewAdapter(
     abstract class StoriesBasePreviewViewHolder(
         listener: StoriesAdapterListener,
         containerView: View,
-        config: StoriesConfig? = null
+        inputParams: StoriesInputParams = StoriesInputParams.createDefaults()
     ) : RecyclerView.ViewHolder(containerView) {
 
         init {
             containerView.setOnClickListener {
-                val params = StoriesInputParams(
-                    startStoryPosition = bindingAdapterPosition,
-                    storyConfig = config
+                listener.onStoryClicked(
+                    inputParams.copy(startStoryPosition = bindingAdapterPosition)
                 )
-                listener.onStoryClicked(params)
             }
         }
 

@@ -5,6 +5,7 @@ import cache.db.CacheDao
 import cache.model.StoryEntity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.redmadrobot.stories.models.StoriesInputParams
 import com.redmadrobot.stories.models.Story
 import com.redmadrobot.stories.stories.StoriesController
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +23,7 @@ internal class StoriesCache(
         private const val MILLISECONDS = 1000L
     }
 
-    var globalConfig: StoriesConfig = StoriesConfig.All
+    var globalConfig: StoriesConfig = StoriesInputParams.defaultStoryConfig()
     var isImagesPreload = false
 
     override fun getScope(): CoroutineScope = coroutine
