@@ -22,5 +22,9 @@ import kotlinx.parcelize.Parcelize
  * */
 @Parcelize
 enum class StoryIsSeenWhen : Parcelable {
-    IMMEDIATE, ONE, TWO, LAST_FRAME
+    IMMEDIATE, ONE, TWO, LAST_FRAME;
+
+    companion object {
+        fun default() = LAST_FRAME
+    }
 }

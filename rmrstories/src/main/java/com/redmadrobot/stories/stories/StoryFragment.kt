@@ -10,7 +10,10 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.redmadrobot.stories.R
 import com.redmadrobot.stories.databinding.FragmentStoryBinding
-import com.redmadrobot.stories.models.*
+import com.redmadrobot.stories.models.Story
+import com.redmadrobot.stories.models.StoryFrame
+import com.redmadrobot.stories.models.StoryFrameControlsColor
+import com.redmadrobot.stories.models.StoryIsSeenWhen
 import com.redmadrobot.stories.models.exception.StoryInstanceRequired
 import com.redmadrobot.stories.stories.views.BaseStoryFrameView
 import com.redmadrobot.stories.stories.views.StoryFrameViewImpl
@@ -176,7 +179,7 @@ open class StoryFragment : Fragment(), StoryListener {
             story = it
         } ?: throw StoryInstanceRequired
         storyIsSeenWhen = arguments?.getParcelable(KEY_STORY_IS_SEEN_WHEN)
-            ?: StoriesInputParams.defaultStoryIsSeenWhen()
+            ?: StoryIsSeenWhen.default()
     }
 
     private fun initViews() {

@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         recycler.apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-            adapter = StoriesPreviewAdapter(onStoryClicked)
+            adapter = StoriesPreviewAdapter(onStoryClicked, StoriesInputParams.createDefaults())
 
             val horizontalMargin =
                 resources.getDimensionPixelOffset(R.dimen.stories_preview_horizontal_margin)

@@ -16,23 +16,16 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class StoriesInputParams(
     val startStoryPosition: Int,
-    val storyConfig: StoriesConfig? = null,
-    val storyIsSeenWhen: StoryIsSeenWhen? = null
+    val storyConfig: StoriesConfig? = null
 ) : Parcelable {
     companion object {
         /**
          * Default parameters, where [startStoryPosition] is 0,
-         * [storyConfig] is [StoriesConfig.All] and
-         * [storyIsSeenWhen] is [StoryIsSeenWhen.LAST_FRAME].
+         * [storyConfig] is [StoriesConfig.All].
          * */
         fun createDefaults() = StoriesInputParams(
             startStoryPosition = 0,
-            storyConfig = defaultStoryConfig(),
-            storyIsSeenWhen = defaultStoryIsSeenWhen()
+            storyConfig = StoriesConfig.default()
         )
-
-        fun defaultStoryConfig() = StoriesConfig.All
-
-        fun defaultStoryIsSeenWhen() = StoryIsSeenWhen.LAST_FRAME
     }
 }

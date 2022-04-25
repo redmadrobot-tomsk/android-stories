@@ -20,7 +20,7 @@ import com.redmadrobot.stories.utils.setImageWithGlide
  * */
 class StoriesPreviewAdapter(
     private val listener: StoriesAdapterListener,
-    private val inputParams: StoriesInputParams = StoriesInputParams.createDefaults()
+    private val inputParams: StoriesInputParams
 ) : StoriesBasePreviewAdapter(R.layout.item_preview_story, inputParams) {
 
     override fun createViewHolder(view: View): StoriesBasePreviewViewHolder =

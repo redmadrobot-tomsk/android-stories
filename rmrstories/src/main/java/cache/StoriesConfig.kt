@@ -27,4 +27,8 @@ sealed class StoriesConfig : Parcelable {
 
     @Parcelize
     data class ByTime(val seconds: Long) : StoriesConfig()
+
+    companion object {
+        fun default() = All
+    }
 }

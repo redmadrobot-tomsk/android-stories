@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
  */
 abstract class StoriesBasePreviewAdapter(
     @LayoutRes private val layout: Int,
-    private val inputParams: StoriesInputParams = StoriesInputParams.createDefaults()
+    private val inputParams: StoriesInputParams
 ) : ListAdapter<Story, StoriesBasePreviewAdapter.StoriesBasePreviewViewHolder>(DIFF_UTIL) {
 
     companion object {
@@ -78,7 +78,7 @@ abstract class StoriesBasePreviewAdapter(
     abstract class StoriesBasePreviewViewHolder(
         listener: StoriesAdapterListener,
         containerView: View,
-        inputParams: StoriesInputParams = StoriesInputParams.createDefaults()
+        inputParams: StoriesInputParams
     ) : RecyclerView.ViewHolder(containerView) {
 
         init {
